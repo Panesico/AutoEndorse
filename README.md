@@ -10,6 +10,6 @@ chmod +x install.sh
 ``` venv
 python AutoEndorse.py
 ```
-WARNING - Support for spanish language in linkedin will be added soon
+WARNING - Remember to set the language to your web settings. Its not intended for log messages.
 
 be careful not to rm -rf ~ like I did :)
