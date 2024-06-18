@@ -23,22 +23,53 @@ last_execution = os.getenv("E_LAST_EXECUTION")
 start_index = int(os.getenv("E_START_INDEX"))
 endorsements_left = int(os.getenv("E_ENDORSEMENTS_LEFT"))
 first_time = os.getenv("FIRST_TIME").lower() == "true"
+lines = open('buddies.txt', 'r').readlines()
+
+if len(lines) >= start_index:
+    start_index = 0
+    
+print(len(lines))
 
 # Get the current date
 current_date = datetime.datetime.now().strftime("%Y-%m-%d")
 
-# If the last execution date is the same as the current date do not execute the script
+# If the last execution date is the same as the current date and no endorsements left, do not execute the script
 if last_execution == current_date and endorsements_left == 0:
     sys.exit(1)
 
 if last_execution != current_date:
     with open('.env', 'w') as f:
         f.write("E_ITERATIONS=" + str(iterations) + "\n")
-        f.write("E_START_INDEX=" + str(int(os.environ["E_START_INDEX"])) + "\n")
+        f.write("E_START_INDEX=" + str(start_index) + "\n")
         f.write("E_LAST_EXECUTION=" + current_date + "\n")
         f.write("E_ENDORSEMENTS_LEFT=" + "150" + "\n")
         f.write("FIRST_TIME=" + str(first_time) + "\n")
     endorsements_left = 150
+    
+
+    #language
+
+endorse_button_text = "Endorse"
+
+def esp_translate():
+    global endorse_button_text
+    endorse_button_text = "Validar"
+
+print("Please select a language with the number / Por favor seleccione un idioma con el numero:")
+print("1. English")
+print("2. Español")
+
+choice = input("--> ")
+
+if choice == '1':
+    print("You have selected English.")
+elif choice == '2':
+    print("Ha seleccionado Español.")
+    esp_translate()
+else:
+    print("Invalid selection. Please run the script again and select 1 or 2.")
+    
+
 
 # Create a Chrome WebDriver instance with the specified path
 # probably some are just bloat
@@ -91,8 +122,6 @@ print(f"{GREEN}Starting...{ERASE}")
 
 success_counter = 0
 row_counter = 0
-lines = open('buddies.txt', 'r').readlines()
-
 
 def make_number(input_str):
     number = ''
@@ -126,6 +155,7 @@ for line in lines[start_index:]:
     main_div = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.TAG_NAME, "main"))
     )
+    unclickable_button_counter = 0
     while True:
         js_code = """
             document.addEventListener('orsedByViewer', function(event) {
@@ -137,7 +167,7 @@ for line in lines[start_index:]:
         time.sleep(1)
         try:
             endorse_button = WebDriverWait(main_div, 10).until(
-                EC.presence_of_element_located((By.XPATH, "//button[span[text()='Endorse']]"))
+                EC.presence_of_element_located((By.XPATH, "//button[span[text()='" + endorse_button_text + "']]"))
             )
         except:
             print(f"{RED}Could not find any buttons{ERASE}")
@@ -150,8 +180,11 @@ for line in lines[start_index:]:
             endorse_button.click()
             endorsements_left -= 1
         except:
-            print(f"{RED}Could not click the endorse button{ERASE}")
-            break
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            if unclickable_button_counter > 2:
+                print(f"{RED}Could not click the endorse button{ERASE}")
+                break
+            unclickable_button_counter += 1
         time.sleep(3)
 
     if endorsements_left == 0:
