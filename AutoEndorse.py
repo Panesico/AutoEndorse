@@ -7,12 +7,16 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from colorama import init, Fore, Style
 
-RED = '\033[91m'
-GREEN = '\033[92m'
-LIGHT_BLUE = '\033[94m'
-PURPLE = '\033[95m'
-ERASE = '\033[0m'
+# Initialise the colours
+init()
+
+RED = Fore.RED
+GREEN = Fore.GREEN
+LIGHT_BLUE = Style.BRIGHT + Fore.BLUE
+PURPLE = Style.BRIGHT + Fore.MAGENTA
+ERASE = Style.RESET_ALL
 
 # Load the environment variables from the .env file
 load_dotenv()
@@ -106,7 +110,7 @@ if first_time:
     try:
         profile_info = WebDriverWait(driver, 300).until(
             EC.presence_of_element_located((By.CLASS_NAME, "feed-identity-module__actor-meta")))
-        print("profile info found!")
+        print(f"{GREEN}Profile info found!{ERASE}")
     except:
         print(f"{RED}Login timeout! Exiting...{ERASE}")
         sys.exit(1)
