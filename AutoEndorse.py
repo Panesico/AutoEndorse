@@ -55,8 +55,6 @@ else:
 
 if len(lines) >= start_index:
     start_index = 0
-    
-print(len(lines))
 
 # Get the current date
 current_date = datetime.datetime.now().strftime("%Y-%m-%d")
