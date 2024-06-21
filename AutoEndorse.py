@@ -13,6 +13,7 @@ from colorama import init, Fore, Style
 init()
 
 RED = Fore.RED
+ORANGE = Fore.RED + Fore.YELLOW
 GREEN = Fore.GREEN
 LIGHT_BLUE = Style.BRIGHT + Fore.BLUE
 PURPLE = Style.BRIGHT + Fore.MAGENTA
@@ -79,8 +80,23 @@ current_endorsement_amount = endorsements_left
 # Create a Chrome WebDriver instance with the specified path
 # probably some are just bloat
 options = webdriver.ChromeOptions()
+
 options.add_argument("--remote-debugging-port=9292")
-options.add_argument("--user-data-dir=.config/google-chrome")  # Always get the same chrome profile
+if sys.platform.startswith("win"):
+    print(f"Making a configuration for {RED}Windows{ERASE} 🤢🤢🤮")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--user-data-dir=.\\config\\google-chrome")
+elif sys.platform.startswith("linux"):
+    print(f"Making a configuration for {GREEN}Linux{ERASE} 😎")
+    options.add_argument("--user-data-dir=./config/google-chrome")
+elif sys.platform.startswith("darwin"):
+    print(f"Making a configuration for {ORANGE}macOS{ERASE} 🤑🤑")
+    options.add_argument("--user-data-dir=./config/google-chrome")
+else:
+    print("Unknown operating system.")
+    options.add_argument("--user-data-dir=./config/google-chrome")
+
 options.add_argument("--no-first-run")
 options.add_argument("--no-default-browser-check")
 

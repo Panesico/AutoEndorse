@@ -3,8 +3,8 @@
 # Function to install Python on Debian/Ubuntu
 install_python_debian() {
     echo "Installing Python on Debian/Ubuntu..."
-    sudo apt update
-    sudo apt install -y python3 python3-venv python3-pip
+    sudo apt-get update
+    sudo apt-get install -y python3 python3-venv python3-pip
 }
 
 # Function to install Python on Arch Linux
