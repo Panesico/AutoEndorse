@@ -9,10 +9,10 @@ chmod +x install.sh
 ```
 
 ## Windows
-``` powershell
+``` cmd
 git clone https://github.com/Panesico/AutoEndorse
 cd AutoEndorse
-.\install.ps1
+.\install.bat
 ```
 
 # Usage
