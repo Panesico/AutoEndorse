@@ -2,7 +2,7 @@
 setlocal
 
 REM Define variables
-set PYTHON_URL=https://www.python.org/ftp/python/3.12.9/python-3.10.9-amd64.exe
+set PYTHON_URL=https://www.python.org/ftp/python/3.10.9/python-3.10.9-amd64.exe
 set PYTHON_INSTALLER=python_installer.exe
 set VENV_DIR=myenv
 
