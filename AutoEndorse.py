@@ -31,7 +31,7 @@ iterations = int(os.getenv("E_ITERATIONS"))
 last_execution = os.getenv("E_LAST_EXECUTION")
 start_index = int(os.getenv("E_START_INDEX"))
 endorsements_left = int(os.getenv("E_ENDORSEMENTS_LEFT"))
-language = os.getenv("E_LANGUAGE").lower()
+language = os.getenv("E_LANGUAGE")
 first_time = os.getenv("FIRST_TIME").lower() == "true"
 lines = open("buddies.txt", "r").readlines()
 endorse_button_text = "Endorse"
@@ -75,6 +75,8 @@ if language is None:
     else:
         print("Invalid selection. Please run the script again and select 1 or 2.")
         sys.exit(1)
+
+language = language.lower()
 
 if language == "english":
     print("You have selected English.")
@@ -120,7 +122,7 @@ os.makedirs(download_path, exist_ok=True)
 
 if sys.platform.startswith("win"):
     print(f"Making a configuration for {RED}Windows{ERASE} 🤢🤢🤮")
-    chromium_url = "https://storage.googleapis.com/chromium-browser-snapshots/Win_x64/1000000/chrome-win.zip"
+    chromium_url = "https://storage.googleapis.com/chromium-browser-snapshots/Win_x64/1029089/chrome-win.zip"
     chromium_path = os.path.join(download_path, "chrome-win", "chrome.exe")
     if not os.path.exists(chromium_path):
         download_and_extract_chromium(chromium_url, download_path)
@@ -136,7 +138,7 @@ elif sys.platform.startswith("linux"):
     options.add_argument("--user-data-dir=./config/my-google-chrome")
 elif sys.platform.startswith("darwin"):
     print(f"Making a configuration for {ORANGE}macOS{ERASE} 🤑🤑")
-    chromium_url = "https://storage.googleapis.com/chromium-browser-snapshots/Mac/1000000/chrome-mac.zip"
+    chromium_url = "https://storage.googleapis.com/chromium-browser-snapshots/Mac/1020972/chrome-mac.zip"
     chromium_path = os.path.join(download_path, "chrome-mac", "Chromium.app", "Contents", "MacOS", "Chromium")
     if not os.path.exists(chromium_path):
         download_and_extract_chromium(chromium_url, download_path)
@@ -246,7 +248,6 @@ for line in lines[start_index:]:
             endorsement_per_person += 1
         except:
             print(f"{RED}Could not find any buttons{ERASE}")
-            time.sleep(200)
             break
 
         try:
