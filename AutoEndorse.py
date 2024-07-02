@@ -281,5 +281,5 @@ with open(".env", "w") as f:
     f.write("E_START_INDEX=" + str(int(os.environ["E_START_INDEX"]) + success_counter) + "\n")
     f.write("E_LAST_EXECUTION=" + current_date + "\n")
     f.write("E_ENDORSEMENTS_LEFT=" + str(endorsements_left) + "\n")
-    f.write("E_LANGUAGE=" + str(choice) + "\n")
+    f.write("E_LANGUAGE=" + str(language) + "\n")
     f.write("FIRST_TIME=" + str(first_time) + "\n")
