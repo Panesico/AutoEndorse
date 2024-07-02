@@ -23,4 +23,5 @@ python AutoEndorse.py
 
 > [!WARNING]
 > Remember to set the language to your web settings. Its not intended for log messages.
-> You need to be connected to other people to give and recieve endorsements.
+> 
+> You need to be connected to other people to give and recieve endorsements!
