@@ -8,6 +8,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.action_chains import ActionChains
+
 import urllib.request
 import zipfile
 import tarfile
@@ -55,6 +57,26 @@ def download_and_extract_chromium(url, extract_to):
     os.remove(file_path)
     print("Chromium is ready.")
 
+def scroll_to_element(driver, element):
+    actions = ActionChains(driver)
+    actions.move_to_element(element).perform()
+
+def smooth_scroll(driver, scroll_duration=5):
+    # Get the total height of the page
+    total_height = driver.execute_script("return document.body.scrollHeight")
+
+    # Calculate the number of steps for smooth scrolling
+    steps = 50
+    step_height = total_height / steps
+
+    # Calculate the time to wait between each step
+    step_time = scroll_duration / steps
+
+    # Perform the smooth scroll
+    for i in range(steps):
+        scroll_to = (i + 1) * step_height
+        driver.execute_script(f"window.scrollTo(0, {scroll_to});")
+        time.sleep(step_time)
 
 # language
 
@@ -175,20 +197,14 @@ if first_time:
     else:
         print(f"{RED}No login box found!{ERASE}")
 
-    try:
-        profile_info = WebDriverWait(driver, 300).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "feed-identity-module__actor-meta")))
-        print(f"{GREEN}Profile info found!{ERASE}")
-    except:
-        print(f"{RED}Login timeout! Exiting...{ERASE}")
-        sys.exit(1)
-
-    try:
-        profile_name = WebDriverWait(profile_info, 10).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "t-black")))
-        print(f"\nNice to see you {PURPLE}{profile_name.text}{ERASE}")
-    except:
-        print(f"{RED}Profile name not found :({ERASE}")
+print("Please, confirm that you are logged in and ready to start the script")
+print("Type 'yes' to continue")
+print("Type anything else to exit")
+confirmation = input("--> ")
+if (confirmation.lower() != "yes"):
+    print("Exiting...")
+    driver.quit()
+    sys.exit(1)
 
 print(f"{GREEN}Starting...{ERASE}")
 
@@ -217,8 +233,6 @@ for line in lines[start_index:]:
 
     row_counter += 1
 
-    time.sleep(5)
-
     delete_this_shi = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.CLASS_NAME, "pv-profile-sticky-header-v2__actions-container"))
     )
@@ -238,17 +252,30 @@ for line in lines[start_index:]:
         """
         driver.execute_script(js_code)
 
-        time.sleep(1)
+        while True:
+            try:
+                delete_this_shi_2 = WebDriverWait(driver, 4).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, "artdeco-tabpanel--hidden"))
+                )
+
+                class_to_remove = "artdeco-tabpanel--hidden"
+                driver.execute_script("arguments[0].classList.remove(arguments[1]);", delete_this_shi_2,
+                                      class_to_remove)
+            except:
+                break
+
         try:
-            endorse_button = WebDriverWait(driver, 10).until(
+            endorse_button = WebDriverWait(driver, 5).until(
                 EC.presence_of_element_located((By.XPATH,
-                                            f"//button[contains(@class, 'artdeco-button')]//span[normalize-space()='{endorse_button_text}']/.."))
+                                                f"//button[contains(@class, 'artdeco-button')]//span[normalize-space()='{endorse_button_text}']/.."))
             )
             print(f"{GREEN}{current_endorsement_amount - endorsements_left + 1} endorsements done{ERASE}")
             endorsement_per_person += 1
         except:
-            print(f"{RED}Could not find any buttons{ERASE}")
-            break
+            if unclickable_button_counter > 6:
+                print(f"{RED}Could not find any buttons{ERASE}")
+                break
+            unclickable_button_counter += 1
 
         try:
             if endorsements_left == 0:
@@ -257,13 +284,16 @@ for line in lines[start_index:]:
             endorse_button.click()
             endorsements_left -= 1
         except:
-            driver.execute_script("arguments[0].scrollIntoView();", endorse_button)
-            if unclickable_button_counter > 2:
+            try:
+                smooth_scroll(driver, 3)
+                scroll_to_element(driver, endorse_button)
+            except:
+                pass
+            if unclickable_button_counter > 7:
                 print(f"{RED}Could not click the endorse button{ERASE}")
                 break
             unclickable_button_counter += 1
-        time.sleep(3)
-
+        time.sleep(4)
     if endorsements_left == 0:
         print("You ran out of endorsements :(")
         break
