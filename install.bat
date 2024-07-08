@@ -46,11 +46,12 @@ echo Upgrading pip...
 python -m pip install --upgrade pip
 
 REM Install required packages
-echo Installing Selenium and python-dotenv...
-pip install selenium python-dotenv colorama
 
 REM Keep the terminal open in the virtual environment
-echo Virtual environment setup complete. The terminal will remain open.
+echo Virtual environment setup complete. Opening virtual environment...
 cmd /k
+
+echo Installing Selenium and python-dotenv...
+pip install -r requirements.txt
 
 endlocal
