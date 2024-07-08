@@ -3,17 +3,25 @@ import os
 import time
 import datetime
 from dotenv import load_dotenv
-from selenium import webdriver
+import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium_stealth import stealth
 
 import urllib.request
 import zipfile
 import tarfile
 from colorama import init, Fore, Style
+import os
+import sys
+import urllib.request
+import zipfile
+import tarfile
+import subprocess
+import shutil
 
 # Initialise the colours
 init()
@@ -131,50 +139,53 @@ if last_execution != current_date:
 
 current_endorsement_amount = endorsements_left
 
-# Create a Chrome WebDriver instance with the specified path
 # probably some are just bloat
 options = Options()
 
-options.add_argument("--no-sandbox")
-options.add_argument("--disable-dev-shm-usage")
-options.add_argument("--remote-debugging-port=9292")
 
-download_path = os.path.expanduser("./chromium")
-os.makedirs(download_path, exist_ok=True)
 
 if sys.platform.startswith("win"):
-    print(f"Making a configuration for {RED}Windows{ERASE} 🤢🤢🤮")
-    chromium_url = "https://storage.googleapis.com/chromium-browser-snapshots/Win_x64/1029089/chrome-win.zip"
-    chromium_path = os.path.join(download_path, "chrome-win", "chrome.exe")
-    if not os.path.exists(chromium_path):
-        download_and_extract_chromium(chromium_url, download_path)
-    options.binary_location = chromium_path
     options.add_argument("--user-data-dir=.\\config\\my-google-chrome")
 elif sys.platform.startswith("linux"):
-    print(f"Making a configuration for {GREEN}Linux{ERASE} 😎")
-    chromium_url = "https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/1000000/chrome-linux.zip"
-    chromium_path = os.path.join(download_path, "chrome-linux", "chrome")
-    if not os.path.exists(chromium_path):
-        download_and_extract_chromium(chromium_url, download_path)
-    options.binary_location = chromium_path
     options.add_argument("--user-data-dir=./config/my-google-chrome")
 elif sys.platform.startswith("darwin"):
-    print(f"Making a configuration for {ORANGE}macOS{ERASE} 🤑🤑")
-    chromium_url = "https://storage.googleapis.com/chromium-browser-snapshots/Mac/1020972/chrome-mac.zip"
-    chromium_path = os.path.join(download_path, "chrome-mac", "Chromium.app", "Contents", "MacOS", "Chromium")
-    if not os.path.exists(chromium_path):
-        download_and_extract_chromium(chromium_url, download_path)
-    options.binary_location = chromium_path
     options.add_argument("--user-data-dir=./config/my-google-chrome")
 else:
     print("Unknown operating system.")
-    # Handle unknown OS accordingly
     sys.exit(1)
 
 options.add_argument("--no-first-run")
 options.add_argument("--no-default-browser-check")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+options.add_argument("--remote-debugging-port=9292")
+options.add_argument("--start-maximized")
+options.add_argument("--disable-extensions")
+options.add_argument("--disable-gpu")
+options.add_argument("--disable-dev-shm-usage")
+options.add_argument("--ignore-certificate-errors")
+options.add_argument("--disable-blink-features=AutomationControlled")
+#options.add_experimental_option("excludeSwitches", ["enable-automation"])
+#options.add_experimental_option('useAutomationExtension', False)
 
-driver = webdriver.Chrome(options=options)
+# Create a Chrome WebDriver instance with the specified path
+driver = uc.Chrome(options=options)
+
+# Remove navigator.webdriver flag
+#driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+
+# Add custom user-agent
+#driver.execute_cdp_cmd('Network.setUserAgentOverride', {
+#    "userAgent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'})
+
+stealth(driver,
+    languages=["en-US", "en"],
+    vendor="Google Inc.",
+    platform="Win32",
+    webgl_vendor="Intel Inc.",
+    renderer="Intel Iris OpenGL Engine",
+    fix_hairline=True,
+)
 
 if first_time:
     driver.get("https://linkedin.com")
@@ -272,7 +283,7 @@ for line in lines[start_index:]:
             print(f"{GREEN}{current_endorsement_amount - endorsements_left + 1} endorsements done{ERASE}")
             endorsement_per_person += 1
         except:
-            if unclickable_button_counter > 6:
+            if unclickable_button_counter > 4:
                 print(f"{RED}Could not find any buttons{ERASE}")
                 break
             unclickable_button_counter += 1
@@ -289,7 +300,7 @@ for line in lines[start_index:]:
                 scroll_to_element(driver, endorse_button)
             except:
                 pass
-            if unclickable_button_counter > 7:
+            if unclickable_button_counter > 4:
                 print(f"{RED}Could not click the endorse button{ERASE}")
                 break
             unclickable_button_counter += 1
