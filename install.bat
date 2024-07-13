@@ -5,7 +5,7 @@ REM Define variables
 set PYTHON_URL=https://www.python.org/ftp/python/3.11.8/python-3.11.8-amd64.exe
 set PYTHON_INSTALLER=python_installer.exe
 set VENV_DIR=myenv
-set CHROME_URL=https://dl.google.com/chrome/install/126/chrome_installer.exe
+set CHROME_URL=https://dl.google.com/chrome/install/latest/chrome_installer.exe
 set CHROME_INSTALLER=chrome_installer.exe
 
 REM Download Python installer
@@ -46,12 +46,10 @@ echo Upgrading pip...
 python -m pip install --upgrade pip
 
 REM Install required packages
+pip install -r requirements.txt
 
 REM Keep the terminal open in the virtual environment
 echo Virtual environment setup complete. Opening virtual environment...
 cmd /k
-
-echo Installing Selenium and python-dotenv...
-pip install -r requirements.txt
 
 endlocal
