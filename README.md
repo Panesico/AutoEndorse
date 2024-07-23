@@ -13,7 +13,7 @@ Automatically endorse all LinkedIn skills of your buddies. Made with Selenium.
 
 ## Installation
 
-## Arch / Debian / Ubuntu
+### Arch / Debian / Ubuntu
 ``` shell
 git clone https://github.com/Panesico/AutoEndorse
 cd AutoEndorse
@@ -21,7 +21,7 @@ chmod +x install.sh
 ./install.sh
 ```
 
-## Windows
+### Windows
 ``` cmd
 git clone https://github.com/Panesico/AutoEndorse
 cd AutoEndorse
